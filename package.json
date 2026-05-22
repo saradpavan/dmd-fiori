@@ -5,6 +5,7 @@
   "dependencies": {
     "@cap-js/postgres": "^2.1.2",
     "@sap/cds": "^9",
+    "dotenv": "^17.4.2",
     "express": "^4",
     "pg": "^8.17.2"
   },
@@ -22,11 +23,11 @@
       "db": {
         "kind": "postgres",
         "credentials": {
-          "host": "localhost",
-          "port": 5432,
-          "database": "dmd_fiori",
-          "user": "postgres",
-          "password": "Pavan@4444"
+          "host": "${DB_HOST}",
+          "port": "${DB_PORT}",
+          "database": "${DB_NAME}",
+          "user": "${DB_USER}",
+          "password": "${DB_PASSWORD}"
         }
       }
     }
