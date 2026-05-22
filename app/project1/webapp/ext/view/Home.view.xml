@@ -1,0 +1,72 @@
+<mvc:View
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    controllerName="project1.ext.view.Home">
+
+    <Page>
+
+<!--
+    <headerContent>
+        <Image src="images/logo-img.png" width="80px" class="header-logo"/>
+    </headerContent> -->
+
+<customHeader>
+        <Bar>
+
+            <contentLeft>
+                <Image src="images/logo-img.png" width="80px"/>
+            </contentLeft>
+
+
+            <contentMiddle>
+                
+            </contentMiddle>
+
+
+            <contentRight>
+            </contentRight>
+
+        </Bar>
+    </customHeader>
+
+
+
+        <content>
+            <VBox
+                class="sapUiSmallMargin">
+
+                
+                
+                <form:SimpleForm   editable='true' layout = 'responsiveGridLayout'
+                xmlns:form="sap.ui.layout.form" class="loginForm" >
+
+            <Image src="images/logo-img.png"
+                    class="logo-image"/>
+
+
+                    <Text text="Migration Dashboard" class="loginTitle" />
+
+                    <Label text="Username" class="userlabel" />
+                    <Input id="username" placeholder = "enter your user name"/>
+                    <Label text="Password" class="passwordlabel"/>
+                    <Input
+                        id="password"
+                        type="Password"
+                        placeholder="enter your Password"
+                    />
+                    
+                    <Button
+                    text="Login"
+                    type="Emphasized"
+                    press="onNavigateToWaves"
+                    class="sapUiSmallMarginTop"/>
+
+                </form:SimpleForm>
+
+
+                
+            </VBox>
+        </content>
+    </Page>
+
+</mvc:View>

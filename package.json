@@ -1,0 +1,40 @@
+{
+  "name": "dmd_test",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "dependencies": {
+    "@cap-js/postgres": "^2.1.2",
+    "@sap/cds": "^9",
+    "express": "^4",
+    "pg": "^8.17.2"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^2",
+    "cds-plugin-ui5": "^0.13.0"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-project1": "cds watch --open project1/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "private": true,
+  "cds": {
+    "requires": {
+      "db": {
+        "kind": "postgres",
+        "credentials": {
+          "host": "localhost",
+          "port": 5432,
+          "database": "dmd_fiori",
+          "user": "postgres",
+          "password": "Pavan@4444"
+        }
+      }
+    }
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/project1"
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "_version": "1.76.0",
+  "sap.app": {
+    "id": "project1",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.20.0",
+      "toolsId": "715d7780-b7a6-4629-9a74-63b3028d7a7e"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/datamigration/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.144.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {},
+        "sap.fe.core": {},
+        "sap.fe.macros": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "project1.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/login.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {},
+      "routes": [
+        {
+          "pattern": "",
+          "name": "Home",
+          "target": "Home"
+        },
+        {
+          "pattern": "Waves:?query:",
+          "name": "WavesList",
+          "target": "WavesList"
+        },
+        {
+          "name": "WavesRolloutsPage",
+          "pattern": "Waves({WavesKey}):?query:",
+          "target": "WavesRolloutsPage"
+        },
+        {
+          "name": "RolloutsMocksPage",
+          "pattern": "Waves({WavesKey})/rollouts({rolloutsKey}):?query:",
+          "target": "RolloutsMocksPage"
+        },
+        {
+          "name": "MocksStreamsPage",
+          "pattern": "Waves({WavesKey})/rollouts({rolloutsKey})/mocks({mocksKey}):?query:",
+          "target": "MocksStreamsPage"
+        },
+        {
+          "name": "MockstreamObjectsPage",
+          "pattern": "Waves({WavesKey})/rollouts({rolloutsKey})/mocks({mocksKey})/mockstreams({mockstreamsKey}):?query:",
+          "target": "MockstreamObjectsPage"
+        }
+      ],
+      "targets": {
+        "Home": {
+          "type": "View",
+          "id": "Home",
+          "name": "project1.webapp.ext.view.Home",
+          "options": {
+            "settings": {
+              "clearControlAggregation": true,
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.SelectionFields": {
+                  "filterFields": {
+                    "status": {
+                      "label": "status",
+                      "property": "status",
+                      "template": "project1.ext.fragment.Rollout_frg",
+                      "required": true
+                    },
+                    "wave_status": {
+                      "label": "status",
+                      "property": "status",
+                      "template": "project1.ext.fragment.Wave_status",
+                      "required": false
+                    },
+                    "asd": {
+                      "label": "we",
+                      "property": "status",
+                      "template": "project1.ext.fragment.Rollout_frg",
+                      "required": true
+                    },
+                    "xc": {
+                      "label": "x",
+                      "property": "actualEndDate",
+                      "template": "project1.ext.fragment.Rollout_frg",
+                      "required": true
+                    },
+                    "STATUS": {
+                      "label": "STATUS",
+                      "property": "rollouts/status",
+                      "template": "project1.ext.fragment.Rollout_frg",
+                      "required": false,
+                      "position": {
+                        "placement": "After",
+                        "anchor": "status"
+                      }
+                    },
+                    "name": {
+                      "label": "name",
+                      "property": "name",
+                      "template": "project1.ext.fragment.Name",
+                      "required": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "WavesList": {
+          "type": "Component",
+          "id": "WavesList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/Waves",
+              "initialLoad": "Enabled",
+              "variantManagement": "Page",
+              "navigation": {
+                "Waves": {
+                  "detail": {
+                    "route": "WavesRolloutsPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "ResponsiveTable"
+                  },
+                  "actions": {
+                    "logout": {
+                      "press": "project1.ext.controller.Logout_handler.logout_method",
+                      "visible": true,
+                      "enabled": true,
+                      "requiresSelection": false,
+                      "text": "logout"
+                    }
+                  }
+                },
+                "@com.sap.vocabularies.UI.v1.SelectionFields": {
+                  "filterFields": {
+                    "status": {
+                      "label": "Status",
+                      "property": "status",
+                      "template": "project1.ext.fragment.WStatus",
+                      "required": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "WavesRolloutsPage": {
+          "type": "Component",
+          "id": "WavesRolloutsPage",
+          "name": "sap.fe.core.fpm",
+          "options": {
+            "settings": {
+              "navigation": {
+                "rollouts": {
+                  "detail": {
+                    "route": "RolloutsMocksPage"
+                  }
+                }
+              },
+              "contextPath": "/Waves",
+              "viewName": "project1.ext.view.Rollouts"
+            }
+          }
+        },
+        "RolloutsMocksPage": {
+          "type": "Component",
+          "id": "RolloutsMocksPage",
+          "name": "sap.fe.core.fpm",
+          "options": {
+            "settings": {
+              "navigation": {
+                "mocks": {
+                  "detail": {
+                    "route": "MocksStreamsPage"
+                  }
+                }
+              },
+              "contextPath": "/Waves/rollouts",
+              "viewName": "project1.ext.view.Mocks"
+            }
+          }
+        },
+        "MocksStreamsPage": {
+          "type": "Component",
+          "id": "MocksStreamsPage",
+          "name": "sap.fe.core.fpm",
+          "options": {
+            "settings": {
+              "navigation": {
+                "mockstreams": {
+                  "detail": {
+                    "route": "MockstreamObjectsPage"
+                  }
+                }
+              },
+              "contextPath": "/Waves/rollouts/mocks",
+              "viewName": "project1.ext.view.Streams"
+            }
+          }
+        },
+        "MockstreamObjectsPage": {
+          "type": "Component",
+          "id": "MockstreamObjectsPage",
+          "name": "sap.fe.core.fpm",
+          "options": {
+            "settings": {
+              "navigation": {},
+              "contextPath": "/Waves/rollouts/mocks/mockstreams",
+              "viewName": "project1.ext.view.Objects"
+            }
+          }
+        }
+      }
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  }
+}
