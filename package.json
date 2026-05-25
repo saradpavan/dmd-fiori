@@ -21,6 +21,9 @@
   "private": true,
   "cds": {
     "requires": {
+      "auth": {
+        "kind": "dummy"
+      },
       "db": {
         "kind": "postgres",
         "credentials": {
