@@ -28,6 +28,7 @@ function getLoginPool() {
 
 async function queryRows(sql, params = []) {
     const result = await getLoginPool().query(sql, params);
+    result.rows.$count = result.rowCount;
     return result.rows;
 }
 
