@@ -6,6 +6,7 @@ const app = express();
 const port = process.env.PORT || 4004;
 
 app.use("/project1", express.static(path.join(__dirname, "app", "project1", "webapp")));
+app.get("/favicon.ico", (_req, res) => res.status(204).end());
 app.get("/", (_req, res) => res.redirect("/project1/index.html"));
 
 cds.serve("all").in(app).then(() => {
