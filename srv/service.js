@@ -49,7 +49,7 @@ module.exports = class DatamigrationService extends cds.ApplicationService { ini
                 const rows = await tx.run(
                     `SELECT username, password, active
                        FROM migration_users
-                      WHERE LOWER(TRIM(username)) = LOWER(TRIM($1))
+                      WHERE LOWER(TRIM(username)) = LOWER(TRIM(?))
                       LIMIT 1`,
                     [username]
                 );
@@ -57,8 +57,10 @@ module.exports = class DatamigrationService extends cds.ApplicationService { ini
 
                 console.log("Login lookup:", {
                     username,
+                    rows: rows && rows.length,
                     found: Boolean(user),
-                    active: user && user.active
+                    active: user && user.active,
+                    passwordMatches: Boolean(user) && String(user.password || '').trim() === password
                 });
 
                 if (!user) return false;
