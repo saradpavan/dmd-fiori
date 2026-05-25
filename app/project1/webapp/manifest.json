@@ -124,7 +124,7 @@
         "Home": {
           "type": "View",
           "id": "Home",
-          "name": "project1.webapp.ext.view.Home",
+          "name": "project1.ext.view.Home",
           "options": {
             "settings": {
               "clearControlAggregation": true,
