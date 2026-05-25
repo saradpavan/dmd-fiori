@@ -67,11 +67,11 @@
       },
       "": {
         "dataSource": "mainService",
-        "preload": true,
+        "preload": false,
         "settings": {
           "operationMode": "Server",
           "autoExpandSelect": true,
-          "earlyRequests": true
+          "earlyRequests": false
         }
       },
       "@i18n": {
