@@ -30,7 +30,8 @@ module.exports = class DatamigrationService extends cds.ApplicationService { ini
     })
 
         this.on("login", async (req) => {
-            const { username, password } = req.data;
+            const username = String(req.data.username || '').trim();
+            const password = String(req.data.password || '').trim();
 
             if (!username || !password) return false;
 
@@ -46,17 +47,23 @@ module.exports = class DatamigrationService extends cds.ApplicationService { ini
             try {
                 const tx = cds.tx(req);
                 const rows = await tx.run(
-                    `SELECT username, password
+                    `SELECT username, password, active
                        FROM migration_users
-                      WHERE username = $1
-                        AND active = true
+                      WHERE LOWER(TRIM(username)) = LOWER(TRIM($1))
                       LIMIT 1`,
                     [username]
                 );
                 const user = rows && rows[0];
 
+                console.log("Login lookup:", {
+                    username,
+                    found: Boolean(user),
+                    active: user && user.active
+                });
+
                 if (!user) return false;
-                if (String(user.password) !== String(password)) return false;
+                if (![true, 'true', 't', '1', 1].includes(user.active)) return false;
+                if (String(user.password || '').trim() !== password) return false;
 
                 return true;
             } catch (error) {
