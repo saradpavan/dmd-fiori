@@ -30,19 +30,39 @@ module.exports = class DatamigrationService extends cds.ApplicationService { ini
     })
 
         this.on("login", async (req) => {
-            console.log('op');
             const { username, password } = req.data;
-            console.log("Login attempt:", username, password);
 
-            const user = await SELECT.one
-            .from(Users)
-            .where({ username, active: true });
-            console.log("User found:", user);
+            if (!username || !password) return false;
 
-          if (!user) return false; // instead of reject
-            if (user.password !== password) return false;
+            if (
+                process.env.LOGIN_USERNAME &&
+                process.env.LOGIN_PASSWORD &&
+                username === process.env.LOGIN_USERNAME &&
+                password === process.env.LOGIN_PASSWORD
+            ) {
+                return true;
+            }
 
-        return true;
+            try {
+                const tx = cds.tx(req);
+                const rows = await tx.run(
+                    `SELECT username, password
+                       FROM migration_users
+                      WHERE username = $1
+                        AND active = true
+                      LIMIT 1`,
+                    [username]
+                );
+                const user = rows && rows[0];
+
+                if (!user) return false;
+                if (String(user.password) !== String(password)) return false;
+
+                return true;
+            } catch (error) {
+                console.error("Login failed:", error);
+                return false;
+            }
         });
 
     // 🚫 Block all non-READ operations (extra safety)
