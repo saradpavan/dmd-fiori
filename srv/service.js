@@ -26,6 +26,22 @@ function getLoginPool() {
     return loginPool;
 }
 
+async function queryRows(sql, params = []) {
+    const result = await getLoginPool().query(sql, params);
+    return result.rows;
+}
+
+function statusCriticalityExpression(alias = '') {
+    const prefix = alias ? `${alias}.` : '';
+    return `CASE
+        WHEN ${prefix}status = 'COMPLETED' THEN 3
+        WHEN ${prefix}status = 'IN_PROGRESS' THEN 2
+        WHEN ${prefix}status = 'ON_HOLD' THEN 1
+        WHEN ${prefix}status = 'YET_TO_START' THEN 5
+        ELSE 0
+    END`;
+}
+
 module.exports = class DatamigrationService extends cds.ApplicationService { init() {
 
     const {
@@ -54,6 +70,107 @@ module.exports = class DatamigrationService extends cds.ApplicationService { ini
             { code: 'YET_TO_START'}
         ]
     })
+
+    this.on('READ', 'Waves', async () => queryRows(`
+        SELECT
+            id AS "ID",
+            name,
+            startdate AS "startDate",
+            enddate AS "endDate",
+            actualstartdate AS "actualStartDate",
+            actualenddate AS "actualEndDate",
+            status,
+            ${statusCriticalityExpression()} AS "StatusCriticality",
+            rag,
+            CASE
+                WHEN rag = 'G' THEN 3
+                WHEN rag = 'A' THEN 2
+                WHEN rag = 'R' THEN 1
+                ELSE 0
+            END AS "ragCriticality",
+            completionpercent AS "completionPercent",
+            ${statusCriticalityExpression()} AS "progressCriticality"
+        FROM migration_waves
+        ORDER BY id
+    `));
+
+    this.on('READ', 'Rollouts', async () => queryRows(`
+        SELECT
+            id AS "ID",
+            name,
+            status,
+            ${statusCriticalityExpression()} AS "StatusCriticality",
+            startdate AS "startDate",
+            actualstartdate AS "actualStartDate",
+            reason,
+            lastmodifiedat AS "lastModifiedAt",
+            waves_id AS "waves_ID"
+        FROM migration_rollouts
+        ORDER BY id
+    `));
+
+    this.on('READ', 'Mocks', async () => queryRows(`
+        SELECT
+            id AS "ID",
+            name,
+            status,
+            CASE
+                WHEN status = 'COMPLETED' THEN 'Completed'
+                WHEN status = 'IN_PROGRESS' THEN 'In Progress'
+                WHEN status = 'ON_HOLD' THEN 'On Hold'
+                WHEN status = 'YET_TO_START' THEN 'Yet to Start'
+                ELSE status
+            END AS "StatusText",
+            ${statusCriticalityExpression()} AS "StatusCriticality",
+            startdate AS "startDate",
+            enddate AS "endDate",
+            completionpercent AS "completionPercent",
+            rollouts_id AS "rollouts_ID"
+        FROM migration_mocks
+        ORDER BY id
+    `));
+
+    this.on('READ', 'Streams', async () => queryRows(`
+        SELECT id, name
+        FROM migration_streams
+        ORDER BY id
+    `));
+
+    this.on('READ', 'Objects', async () => queryRows(`
+        SELECT id, name
+        FROM migration_objects
+        ORDER BY id
+    `));
+
+    this.on('READ', 'Mockstream', async () => queryRows(`
+        SELECT
+            mockstreamid AS "mockStreamId",
+            startdate AS "startDate",
+            enddate AS "endDate",
+            status,
+            mock_id AS "mock_ID",
+            stream_id AS "stream_id"
+        FROM migration_mockstream
+        ORDER BY mockstreamid
+    `));
+
+    this.on('READ', 'MockStreamObjects', async () => queryRows(`
+        SELECT
+            id AS "ID",
+            datatype AS "dataType",
+            extractionmethod AS "extractionMethod",
+            transformationmethod AS "transformationMethod",
+            loadingmethod AS "loadingMethod",
+            totalrecords AS "totalRecords",
+            recordsloaded AS "recordsLoaded",
+            remarks,
+            startdate AS "startDate",
+            enddate AS "endDate",
+            mockstream_mockstreamid AS "mockStream_mockStreamId",
+            object_id AS "object_id"
+        FROM migration_mockstreamobjects
+        ORDER BY id
+    `));
 
         this.on("login", async (req) => {
             const username = String(req.data.username || '').trim();
