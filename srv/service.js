@@ -1,4 +1,30 @@
 const cds = require('@sap/cds');
+const { Pool } = require('pg');
+
+let loginPool;
+
+function getLoginPool() {
+    if (loginPool) return loginPool;
+
+    if (process.env.DATABASE_URL) {
+        loginPool = new Pool({
+            connectionString: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false }
+        });
+        return loginPool;
+    }
+
+    loginPool = new Pool({
+        host: process.env.DB_HOST,
+        port: Number(process.env.DB_PORT || 5432),
+        database: process.env.DB_NAME,
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        ssl: { rejectUnauthorized: false }
+    });
+
+    return loginPool;
+}
 
 module.exports = class DatamigrationService extends cds.ApplicationService { init() {
 
@@ -45,19 +71,18 @@ module.exports = class DatamigrationService extends cds.ApplicationService { ini
             }
 
             try {
-                const tx = cds.tx(req);
-                const rows = await tx.run(
+                const result = await getLoginPool().query(
                     `SELECT username, password, active
                        FROM migration_users
-                      WHERE LOWER(TRIM(username)) = LOWER(TRIM(?))
+                      WHERE LOWER(TRIM(username)) = LOWER(TRIM($1))
                       LIMIT 1`,
                     [username]
                 );
-                const user = rows && rows[0];
+                const user = result.rows && result.rows[0];
 
                 console.log("Login lookup:", {
                     username,
-                    rows: rows && rows.length,
+                    rows: result.rowCount,
                     found: Boolean(user),
                     active: user && user.active,
                     passwordMatches: Boolean(user) && String(user.password || '').trim() === password
